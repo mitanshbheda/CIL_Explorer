@@ -1,0 +1,61 @@
+{
+  "_comment": "CIL Explorer — Data Schema Reference. Use this as the template when populating norms in Phase 2.",
+  "norm_template": {
+    "norm_id": "DOMAIN-NN (e.g. IHL-01, HR-03)",
+    "title": "Plain-English statement of the norm",
+    "domain": "One of: armed_conflict | human_rights | state_responsibility | diplomatic_consular | law_of_the_sea | environment | use_of_force | jurisdiction_immunity",
+    "status": "One of: established | emerging | contested",
+    "contested": "Boolean — true if norm has significant dissenting state practice or academic dispute",
+    "summary": "150-word description: rule statement → state practice evidence → opinio juris evidence → key disputes",
+    "primary_codification": "Closest treaty article, ILC rule, or ICJ case",
+    "state_practice": [
+      {
+        "practice_id": "SP-001",
+        "description": "Brief description of the state act or omission",
+        "states_involved": ["Country A", "Country B"],
+        "year": 2001,
+        "source_ids": ["SRC-001"]
+      }
+    ],
+    "opinio_juris": [
+      {
+        "oj_id": "OJ-001",
+        "description": "Brief description of the legal belief demonstrated",
+        "evidence_type": "One of: un_resolution | treaty_preamble | national_legislation | judicial_statement | official_statement | military_manual",
+        "year": 2001,
+        "source_ids": ["SRC-002"]
+      }
+    ],
+    "sources": [
+      {
+        "source_id": "SRC-001",
+        "type": "One of: icj_judgment | icj_advisory | icrc_rule | un_resolution | treaty | national_legislation | arbitral_award | scholarly_article | military_manual | national_court",
+        "title": "Full citation title",
+        "year": null,
+        "url": "",
+        "evidentiary_type": "One of: practice | juris | both",
+        "notes": "Optional — flag if source is disputed or represents minority view"
+      }
+    ]
+  },
+  "domains": {
+    "armed_conflict": { "label": "Laws of armed conflict / IHL", "norm_count": 7 },
+    "human_rights": { "label": "International human rights", "norm_count": 6 },
+    "state_responsibility": { "label": "State responsibility", "norm_count": 6 },
+    "diplomatic_consular": { "label": "Diplomatic & consular relations", "norm_count": 5 },
+    "law_of_the_sea": { "label": "Law of the sea", "norm_count": 6 },
+    "environment": { "label": "International environmental law", "norm_count": 5 },
+    "use_of_force": { "label": "Use of force / jus ad bellum", "norm_count": 6 },
+    "jurisdiction_immunity": { "label": "Jurisdiction & immunity", "norm_count": 7 }
+  },
+  "status_definitions": {
+    "established": "Broad state acceptance, consistent practice, confirmed by ICJ or equivalent",
+    "emerging": "Growing acceptance but practice not yet uniform; contested by significant minority of states",
+    "contested": "Actively disputed — competing state practice or explicit disagreement among legal authorities"
+  },
+  "evidentiary_type_definitions": {
+    "practice": "Source demonstrates what states DO — acts, omissions, physical conduct",
+    "juris": "Source demonstrates what states BELIEVE is legally required — opinio juris",
+    "both": "Source serves as evidence of both elements simultaneously"
+  }
+}
