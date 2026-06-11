@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LexCustoms — Customary International Law & Customs Database</title>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="light">
+
+  <!-- TOP APP BAR -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">Lex<span>Customs</span></div>
+      <span class="brand-tag">Customs & CIL DB</span>
+    </div>
+    
+    <div class="header-actions">
+      <!-- Theme Toggle -->
+      <button class="theme-toggle-btn" id="theme-toggle" title="Toggle theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      
+      <!-- Session Indicator -->
+      <div id="session-indicator" style="display:none; font-size:0.75rem; color:var(--text-secondary);">
+        <i class="fa-solid fa-user-shield"></i> <span id="session-username">Admin</span> 
+        <button class="btn btn-secondary btn-sm" onclick="logoutAdmin()" style="margin-left: 0.5rem; padding: 0.2rem 0.5rem;">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- WORKSPACE CONTAINER -->
+  <div class="workspace">
+    
+    <!-- LEFT SIDEBAR: FILTERS AND RECORDS LIST -->
+    <nav class="sidebar" id="app-sidebar">
+      
+      <!-- Search Box -->
+      <div class="sidebar-search-container">
+        <div class="search-wrapper">
+          <input type="text" id="global-search" placeholder="Search regulations, laws, keywords, sources..." oninput="handleSearchInput()">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        </div>
+      </div>
+      
+      <!-- Filter 1: Domain (Regulation Type) -->
+      <div class="sidebar-filter-section">
+        <div class="filter-group-title">Regulation Type <i class="fa-solid fa-filter"></i></div>
+        <select class="sidebar-select" id="filter-domain" onchange="applyFilters()">
+          <option value="">All Domains</option>
+          <option value="armed_conflict">Laws of Armed Conflict / IHL</option>
+          <option value="human_rights">International Human Rights</option>
+          <option value="state_responsibility">State Responsibility</option>
+          <option value="diplomatic_consular">Diplomatic & Consular Relations</option>
+          <option value="law_of_the_sea">Law of the Sea</option>
+          <option value="environment">International Environmental Law</option>
+          <option value="use_of_force">Use of Force / Jus ad Bellum</option>
+          <option value="jurisdiction_immunity">Jurisdiction & Immunity</option>
+        </select>
+      </div>
+      
+      <!-- Filter 2: Legal Status -->
+      <div class="sidebar-filter-section">
+        <div class="filter-group-title">Legal Status</div>
+        <div class="filter-chips">
+          <span class="chip active" onclick="toggleStatusFilter('', this)">All</span>
+          <span class="chip" onclick="toggleStatusFilter('established', this)">Established</span>
+          <span class="chip" onclick="toggleStatusFilter('emerging', this)">Emerging</span>
+          <span class="chip" onclick="toggleStatusFilter('contested', this)">Contested</span>
+        </div>
+      </div>
+
+      <!-- Filter 3: Region -->
+      <div class="sidebar-filter-section">
+        <div class="filter-group-title">Geographical Region</div>
+        <select class="sidebar-select" id="filter-region" onchange="applyFilters()">
+          <option value="">All Regions</option>
+          <option value="North America">North America</option>
+          <option value="Europe">Europe</option>
+          <option value="Asia-Pacific">Asia-Pacific</option>
+          <option value="Latin America">Latin America</option>
+          <option value="Middle East">Middle East</option>
+          <option value="Africa">Africa</option>
+          <option value="Global">Global / Universal</option>
+        </select>
+      </div>
+
+      <!-- Filter 4: Trade Bloc -->
+      <div class="sidebar-filter-section">
+        <div class="filter-group-title">Trade Bloc</div>
+        <select class="sidebar-select" id="filter-trade-bloc" onchange="applyFilters()">
+          <option value="">All Trade Blocs</option>
+          <option value="USMCA">USMCA (North America)</option>
+          <option value="European Union">European Union</option>
+          <option value="CPTPP">CPTPP (Trans-Pacific)</option>
+          <option value="RCEP">RCEP (Asia-Pacific)</option>
+          <option value="Mercosur">Mercosur (South America)</option>
+          <option value="EFTA">EFTA (Europe)</option>
+          <option value="ECOWAS">ECOWAS (West Africa)</option>
+          <option value="SACU">SACU (Southern Africa)</option>
+          <option value="GCC">GCC (Arab States)</option>
+          <option value="None">Non-aligned / Treaty-based</option>
+        </select>
+      </div>
+
+      <!-- Records Count Badge -->
+      <div class="sidebar-list-header" id="list-count-badge">
+        Loading regulations database...
+      </div>
+      
+      <!-- Records Scroll List -->
+      <div class="sidebar-list" id="sidebar-list">
+        <!-- Dyn. populated items -->
+      </div>
+    </nav>
+    
+    <!-- MAIN VIEWPORT -->
+    <main class="main-viewport">
+      
+      <!-- NAVIGATION VIEWS BAR -->
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-view="explorer" onclick="switchView('explorer')">
+          <i class="fa-solid fa-scale-balanced"></i> Law Explorer
+        </button>
+        <button class="nav-tab" data-view="country-profiles" onclick="switchView('country-profiles')">
+          <i class="fa-solid fa-globe"></i> Country Profiles
+        </button>
+        <button class="nav-tab" data-view="analytics" onclick="switchView('analytics')">
+          <i class="fa-solid fa-chart-line"></i> Analytics Hub
+        </button>
+        <button class="nav-tab" data-view="admin" id="admin-nav-btn" onclick="switchView('admin')">
+          <i class="fa-solid fa-user-lock"></i> Admin Portal
+        </button>
+      </div>
+      
+      <!-- ── PANEL 1: EXPLORER VIEW ── -->
+      <section class="view-panel active" id="view-explorer">
+        
+        <!-- Welcome Jumbotron -->
+        <div id="explorer-welcome" class="welcome-screen">
+          <div class="welcome-logo">⚖</div>
+          <h1>Customary International Law & Customs Reference</h1>
+          <p>
+            A high-performance research platform indexing 50 customary norms, state practice records, and legal source citations. Select a rule from the left panel to begin analysis, or use filters to narrow down the taxonomy.
+          </p>
+          <div class="welcome-stats">
+            <div class="welcome-stat-card">
+              <div class="welcome-stat-num">50</div>
+              <div class="welcome-stat-label">Core Norms</div>
+            </div>
+            <div class="welcome-stat-card">
+              <div class="welcome-stat-num">300+</div>
+              <div class="welcome-stat-label">Primary Citations</div>
+            </div>
+            <div class="welcome-stat-card">
+              <div class="welcome-stat-num">35+</div>
+              <div class="welcome-stat-label">Jurisdictions</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Detailed Document Viewer -->
+        <div id="explorer-detail" style="display:none;" class="legal-card">
+          <!-- Dyn. populated via app.js -->
+        </div>
+      </section>
+      
+      <!-- ── PANEL 2: COUNTRY PROFILES VIEW ── -->
+      <section class="view-panel" id="view-country-profiles">
+        <div id="country-directory">
+          <h2 style="font-family:'Playfair Display', Georgia, serif; margin-bottom: 0.5rem;">Geographical & Customs Profiles</h2>
+          <p style="color:var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">
+            Click on any country or legal entity to view their specific involvement in state practice, regional customs frameworks, active trade blocs, and related regulatory norms.
+          </p>
+          <div class="country-grid" id="country-profiles-grid">
+            <!-- Dyn. populated -->
+          </div>
+        </div>
+        
+        <!-- Single Country Detail View -->
+        <div id="country-profile-detail" style="display:none;" class="country-profile-viewer">
+          <!-- Dyn. populated -->
+        </div>
+      </section>
+      
+      <!-- ── PANEL 3: ANALYTICS DASHBOARD ── -->
+      <section class="view-panel" id="view-analytics">
+        <h2 style="font-family:'Playfair Display', Georgia, serif; margin-bottom: 0.5rem;">Database growth & usage metrics</h2>
+        <p style="color:var(--text-secondary); margin-bottom: 2rem; font-size: 0.9rem;">
+          View real-time database composition stats, access frequencies, and search intelligence.
+        </p>
+        
+        <!-- Metrics Row -->
+        <div class="analytics-metrics-grid">
+          <div class="analytics-metric-card">
+            <div class="welcome-stat-num" id="stat-total-norms">50</div>
+            <div class="welcome-stat-label">Total Customary Regulations</div>
+          </div>
+          <div class="analytics-metric-card">
+            <div class="welcome-stat-num" id="stat-total-practices">0</div>
+            <div class="welcome-stat-label">State Practice Entries</div>
+          </div>
+          <div class="analytics-metric-card">
+            <div class="welcome-stat-num" id="stat-total-sources">0</div>
+            <div class="welcome-stat-label">Primary Citations Indexed</div>
+          </div>
+          <div class="analytics-metric-card">
+            <div class="welcome-stat-num" id="stat-contested-pct">0%</div>
+            <div class="welcome-stat-label">Contested Norm Rate</div>
+          </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="analytics-chart-row">
+          <div class="chart-container-card">
+            <div class="chart-title">Regulations by Domain</div>
+            <div id="chart-domain-dist" class="bar-chart-flex">
+              <!-- Dyn. bars -->
+            </div>
+          </div>
+          
+          <div class="chart-container-card">
+            <div class="chart-title">Database Status Distribution</div>
+            <div id="chart-status-dist" class="bar-chart-flex">
+              <!-- Dyn. bars -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div class="analytics-chart-row">
+          <div class="chart-container-card" style="grid-column: span 2;">
+            <div class="chart-title">Most Consulted Regulations (Top 5)</div>
+            <table class="analytics-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Domain</th>
+                  <th style="text-align: right;">Consultation Views</th>
+                </tr>
+              </thead>
+              <tbody id="table-most-viewed">
+                <!-- Dyn. rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Search Keyword Logs -->
+        <div class="analytics-chart-row">
+          <div class="chart-container-card" style="grid-column: span 2;">
+            <div class="chart-title">Recent Search Intelligence (Top Terms)</div>
+            <table class="analytics-table">
+              <thead>
+                <tr>
+                  <th>Keyword / Search Query</th>
+                  <th style="text-align: right;">Search Occurrences</th>
+                </tr>
+              </thead>
+              <tbody id="table-top-searches">
+                <!-- Dyn. rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      
+      <!-- ── PANEL 4: ADMIN PORTAL ── -->
+      <section class="view-panel" id="view-admin">
+        
+        <!-- Login Form -->
+        <div id="admin-login-panel" class="admin-login-wrapper">
+          <div class="admin-login-title">Administrator Authentication</div>
+          <div id="login-error-msg" style="color:var(--red); font-size:0.75rem; margin-bottom:1rem; display:none; text-align:center;"></div>
+          
+          <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+            <div class="form-group">
+              <label for="login-user">Username</label>
+              <input type="text" id="login-user" required autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label for="login-pass">Password</label>
+              <input type="password" id="login-pass" required autocomplete="current-password">
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:0.5rem;" type="submit">
+              Log In
+            </button>
+          </form>
+          <div style="font-size:0.7rem; color:var(--text-muted); margin-top:1.25rem; text-align:center; line-height:1.4;">
+            Use default seed credentials:<br><strong>admin</strong> / <strong>AdminPassword123!</strong>
+          </div>
+        </div>
+        
+        <!-- Authenticated Admin Dashboard -->
+        <div id="admin-dashboard-panel" style="display:none;">
+          <div class="admin-tabs">
+            <button class="admin-tab active" onclick="switchAdminTab('editor', this)">Norms Editor</button>
+            <button class="admin-tab" onclick="switchAdminTab('users', this)">User Management</button>
+            <button class="admin-tab" onclick="switchAdminTab('moderation', this)">Data Import/Export</button>
+          </div>
+          
+          <!-- ADMIN TAB 1: EDITOR -->
+          <div class="admin-tab-content active" id="admin-tab-editor">
+            <div class="admin-layout">
+              <div>
+                <button class="btn btn-success" style="width:100%; margin-bottom:1rem;" onclick="createNewNormForm()">
+                  <i class="fa-solid fa-plus"></i> Create New Regulation
+                </button>
+                <div class="admin-sidebar-list" id="admin-norms-list">
+                  <!-- Dyn list of all editable norms -->
+                </div>
+              </div>
+              
+              <div class="admin-editor-panel" id="admin-editor-form-panel">
+                <div class="welcome-screen" style="margin: 4rem auto;">
+                  <i class="fa-solid fa-edit" style="font-size: 2.5rem; color: var(--text-muted);"></i>
+                  <h3>Select a Regulation to Edit</h3>
+                  <p>Choose a regulation from the column to the left, or create a brand new one to add to the database.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- ADMIN TAB 2: USER ACCOUNT MANAGER -->
+          <div class="admin-tab-content" id="admin-tab-users" style="display:none;">
+            <div class="admin-layout" style="grid-template-columns: 320px 1fr;">
+              <div class="admin-editor-panel">
+                <h4 style="margin-bottom:1rem;">Add New User</h4>
+                <div id="user-create-error" style="color:var(--red); font-size:0.75rem; margin-bottom:0.5rem; display:none;"></div>
+                <form id="add-user-form" onsubmit="handleAddUser(event)">
+                  <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="new-user-name" required autocomplete="username">
+                  </div>
+                  <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="new-user-pass" required autocomplete="new-password">
+                  </div>
+                  <div class="form-group">
+                    <label>User Role</label>
+                    <select id="new-user-role">
+                      <option value="admin">Administrator</option>
+                      <option value="moderator">Moderator</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-primary btn-sm" style="width:100%; justify-content:center; margin-top:0.5rem;" type="submit">
+                    Create Account
+                  </button>
+                </form>
+              </div>
+              
+              <div class="admin-editor-panel">
+                <h4 style="margin-bottom:1rem;">Active Accounts</h4>
+                <table class="analytics-table">
+                  <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Access Level</th>
+                      <th style="text-align: right;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="table-user-accounts">
+                    <!-- Dyn. populated user list -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+          <!-- ADMIN TAB 3: DATA IMPORT/EXPORT -->
+          <div class="admin-tab-content" id="admin-tab-moderation" style="display:none;">
+            <div class="admin-editor-panel" style="max-width: 600px; margin: 0 auto;">
+              <h4 style="margin-bottom: 1rem;">Export Regulations Database</h4>
+              <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom: 1rem;">
+                Download the complete raw JSON database file containing all 50+ customary international regulations, state practice annotations, opinio juris indicators, and sources.
+              </p>
+              <a href="/api/data/export" class="btn btn-primary" download="norms_export.json">
+                <i class="fa-solid fa-download"></i> Export norms.json
+              </a>
+              
+              <hr style="border:0; border-top:1px solid var(--border-color); margin: 2rem 0;">
+              
+              <h4 style="margin-bottom: 1rem;">Import Regulations Database</h4>
+              <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:1rem;">
+                Overwrite the current database by importing a raw JSON file. Warning: This will completely replace the current regulations list.
+              </p>
+              <div id="import-status-msg" style="font-size:0.75rem; margin-bottom:0.5rem;"></div>
+              
+              <div class="form-group">
+                <input type="file" id="import-json-file" accept=".json" style="background:none; border:none; padding:0;">
+              </div>
+              <button class="btn btn-danger btn-sm" onclick="handleImportJSON()" style="margin-top:0.5rem;">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Overwrite Database
+              </button>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+      
+    </main>
+    
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- GENERAL MODALS -->
+  <div class="modal-overlay" id="confirm-delete-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title">Delete Regulation</span>
+        <button class="modal-close" onclick="closeModal('confirm-delete-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; line-height: 1.6;">
+          Are you absolutely sure you want to delete <strong id="delete-norm-label"></strong>?<br>
+          This operation will permanently purge this customary law and all its associated state practice annotations, opinions, and citations from the system. This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('confirm-delete-modal')">Cancel</button>
+        <button class="btn btn-danger btn-sm" id="confirm-delete-btn">Permanently Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Javascript Logic -->
+  <script src="app.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+{
+  "search_logs": [
+    {
+      "query": "torture",
+      "timestamp": "2026-06-11T09:55:54.836Z",
+      "resultsCount": 12
+    },
+    {
+      "query": "chi",
+      "timestamp": "2026-06-11T10:01:16.135Z",
+      "resultsCount": 2
+    },
+    {
+      "query": "torture",
+      "timestamp": "2026-06-11T10:01:23.695Z",
+      "resultsCount": 8
+    },
+    {
+      "query": "assual",
+      "timestamp": "2026-06-11T10:01:29.411Z",
+      "resultsCount": 0
+    },
+    {
+      "query": "assualt",
+      "timestamp": "2026-06-11T10:01:30.561Z",
+      "resultsCount": 0
+    },
+    {
+      "query": "torture",
+      "timestamp": "2026-06-11T10:01:51.964Z",
+      "resultsCount": 8
+    },
+    {
+      "query": "United Kingdom",
+      "timestamp": "2026-06-11T10:04:30.170Z",
+      "resultsCount": 15
+    },
+    {
+      "query": "United Kingdom",
+      "timestamp": "2026-06-11T10:10:22.896Z",
+      "resultsCount": 15
+    },
+    {
+      "query": "diplomatic",
+      "timestamp": "2026-06-11T10:15:30.535Z",
+      "resultsCount": 6
+    },
+    {
+      "query": "immunity",
+      "timestamp": "2026-06-11T10:55:48.575Z",
+      "resultsCount": 6
+    },
+    {
+      "query": "immunity",
+      "timestamp": "2026-06-11T10:55:54.233Z",
+      "resultsCount": 4
+    },
+    {
+      "query": "immunity",
+      "timestamp": "2026-06-11T10:55:56.509Z",
+      "resultsCount": 1
+    },
+    {
+      "query": "high seas",
+      "timestamp": "2026-06-11T10:57:14.570Z",
+      "resultsCount": 4
+    }
+  ],
+  "view_logs": {
+    "HR-01": 2,
+    "DC-01": 2,
+    "LS-02": 1,
+    "ENV-03": 2,
+    "JI-04": 2,
+    "LS-05": 1,
+    "LS-03": 1,
+    "ENV-02": 1,
+    "ENV-04": 2
+  }
+}

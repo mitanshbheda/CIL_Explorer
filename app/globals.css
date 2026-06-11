@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  
+  --color-gold-val: var(--gold-val);
+  --color-gold-light: var(--gold-light);
+  
+  --color-green-val: var(--green-val);
+  --color-green-light: var(--green-light);
+  
+  --color-red-val: var(--red-val);
+  --color-red-light: var(--red-light);
+  
+  --color-amber-val: var(--amber-val);
+  --color-amber-light: var(--amber-light);
+  
+  --color-bg-app: var(--bg-app);
+  --color-bg-sidebar: var(--bg-sidebar);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-alt: var(--bg-surface-alt);
+  --color-bg-input: var(--bg-input);
+  
+  --color-border-custom: var(--border-custom);
+  --color-border-custom-alt: var(--border-custom-alt);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+}
+
+:root {
+  --primary: #1c3d6e;
+  --primary-hover: #142d54;
+  --primary-light: #e8f0fa;
+  
+  --gold-val: #b07d2a;
+  --gold-light: #faf5eb;
+  
+  --green-val: #106e49;
+  --green-light: #e6f5ef;
+  
+  --red-val: #a33220;
+  --red-light: #faecea;
+  
+  --amber-val: #ba6d18;
+  --amber-light: #faf0e3;
+  
+  --bg-app: #f7f6f2;
+  --bg-sidebar: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #fcfbfa;
+  --bg-input: #f2f1ec;
+  
+  --border-custom: #e2e0d8;
+  --border-custom-alt: #cccac0;
+  
+  --text-primary: #1c1f26;
+  --text-secondary: #4a4d56;
+  --text-muted: #8a8d96;
+}
+
+.dark {
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-light: #182845;
+  
+  --gold-val: #f59e0b;
+  --gold-light: #2c220c;
+  
+  --green-val: #10b981;
+  --green-light: #0d2e24;
+  
+  --red-val: #ef4444;
+  --red-light: #321616;
+  
+  --amber-val: #f97316;
+  --amber-light: #2d1c12;
+  
+  --bg-app: #0c0e12;
+  --bg-sidebar: #12161f;
+  --bg-surface: #181d29;
+  --bg-surface-alt: #1e2433;
+  --bg-input: #10131c;
+  
+  --border-custom: #262f42;
+  --border-custom-alt: #36445c;
+  
+  --text-primary: #f1f3f9;
+  --text-secondary: #c2c9d6;
+  --text-muted: #6e7a94;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* ── SCROLLBARS ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-custom-alt);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-muted);
+}
+
+/* ── LEAFLET Z-INDEX CORRECTIONS ── */
+.leaflet-container {
+  z-index: 10 !important;
+}
