@@ -13,11 +13,20 @@ export async function DELETE(
     }
 
     const { username } = await context.params;
-    if (username.toLowerCase() === 'admin') {
-      return NextResponse.json({ error: 'Cannot delete the master admin account.' }, { status: 400 });
+    let users = getUsers();
+    const userToDelete = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+    
+    if (!userToDelete) {
+      return NextResponse.json({ error: 'User not found.' }, { status: 404 });
     }
 
-    let users = getUsers();
+    if (userToDelete.role === 'admin') {
+      const adminCount = users.filter(u => u.role === 'admin').length;
+      if (adminCount <= 1) {
+        return NextResponse.json({ error: 'Cannot delete the last remaining administrator account.' }, { status: 400 });
+      }
+    }
+
     const initialLen = users.length;
     users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
 

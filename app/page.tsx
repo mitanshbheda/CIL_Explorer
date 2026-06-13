@@ -162,6 +162,8 @@ export default function Home() {
   const [editingNorm, setEditingNorm] = useState<Norm | null>(null);
   const [isEditingNew, setIsEditingNew] = useState(false);
   const [usersList, setUsersList] = useState<User[]>([]);
+  const [isDatabaseEmpty, setIsDatabaseEmpty] = useState<boolean | null>(null);
+  const [origin, setOrigin] = useState('http://localhost:3000');
   
   // UI states
   const [activeDocTab, setActiveDocTab] = useState<'summary' | 'practice' | 'juris' | 'sources' | 'timeline' | 'map'>('summary');
@@ -177,6 +179,10 @@ export default function Home() {
 
   // Load Initial Cache
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOrigin(window.location.origin);
+    }
+
     // Theme loader
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     if (savedTheme) {
@@ -188,6 +194,7 @@ export default function Home() {
 
     loadData();
     checkSession();
+    loadUsersListStatus();
   }, []);
 
   const loadData = () => {
@@ -218,7 +225,29 @@ export default function Home() {
   const loadAdminData = () => {
     fetch('/api/users')
       .then(res => res.json())
-      .then(data => setUsersList(data))
+      .then(data => {
+        setUsersList(data);
+        setIsDatabaseEmpty(data.length === 0);
+      })
+      .catch(() => {});
+  };
+
+  const loadUsersListStatus = () => {
+    fetch('/api/users')
+      .then(res => {
+        if (res.status === 401) {
+          setIsDatabaseEmpty(false);
+          return null;
+        }
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(data => {
+        if (data) {
+          setUsersList(data);
+          setIsDatabaseEmpty(data.length === 0);
+        }
+      })
       .catch(() => {});
   };
 
@@ -229,6 +258,18 @@ export default function Home() {
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 3000);
+  };
+
+  // Reset views & filters to landing page
+  const handleResetToLanding = () => {
+    setActiveView('explorer');
+    setSelectedNormId(null);
+    setSelectedCountryName(null);
+    setSearchQuery('');
+    setFilterDomain('');
+    setFilterStatus('');
+    setFilterRegion('');
+    setFilterTradeBloc('');
   };
 
   // Theme Toggler
@@ -450,6 +491,29 @@ export default function Home() {
     .catch(() => addToast('Invalid credentials provided', 'error'));
   };
 
+  // Admin setup handler (first user)
+  const handleSetupSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const username = data.get('username') as string;
+    const password = data.get('password') as string;
+
+    fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, role: 'admin' })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error();
+      return res.json();
+    })
+    .then(() => {
+      addToast('Master admin registered successfully! Please log in.', 'success');
+      loadUsersListStatus();
+    })
+    .catch(() => addToast('Failed to register master admin', 'error'));
+  };
+
   const handleLogout = () => {
     fetch('/api/auth/logout', { method: 'POST' })
       .then(() => {
@@ -645,7 +709,11 @@ export default function Home() {
       
       {/* ── TOP HEADER BAR ── */}
       <header className="h-[64px] bg-bg-sidebar border-b border-border-custom px-6 flex items-center justify-between shrink-0 z-50 shadow-xs">
-        <div className="flex items-center gap-3">
+        <div 
+          onClick={handleResetToLanding}
+          className="flex items-center gap-3 cursor-pointer select-none active:scale-[0.98] transition-transform duration-100 hover:opacity-90"
+          title="Go to Home / Reset Filters"
+        >
           <div className="font-serif font-bold text-xl text-primary tracking-tight">
             Lex<span className="text-gold-val">Customs</span>
           </div>
@@ -839,7 +907,7 @@ export default function Home() {
               <i className="fa-solid fa-chart-line mr-1"></i> Analytics Hub
             </button>
             <button 
-              onClick={() => { setActiveView('admin'); }}
+              onClick={() => { setActiveView('admin'); loadUsersListStatus(); }}
               className={`text-xs font-medium pb-2 border-b-3 px-1 transition-all cursor-pointer ${
                 activeView === 'admin' 
                   ? 'text-primary border-primary font-semibold' 
@@ -929,7 +997,7 @@ export default function Home() {
                         <div className="bg-bg-surface-alt border border-border-custom p-4 rounded-md">
                           <div className="text-[0.68rem] font-bold text-text-muted mb-2 uppercase tracking-wider">How to cite this record</div>
                           <div className="font-mono text-[0.72rem] text-text-secondary leading-relaxed bg-bg-input p-3 rounded border border-border-custom break-all" id="citation-box-value">
-                            LexCustoms, "{activeNorm.title}" (ID: {activeNorm.norm_id}, Domain: {DOMAIN_LABELS[activeNorm.domain]}), CIL database Reference (2026). URL: http://localhost:3000/api/norms/{activeNorm.norm_id}
+                            LexCustoms, "{activeNorm.title}" (ID: {activeNorm.norm_id}, Domain: {DOMAIN_LABELS[activeNorm.domain]}), CIL database Reference (2026). URL: {origin}/api/norms/{activeNorm.norm_id}
                           </div>
                           <button 
                             onClick={() => {
@@ -1347,26 +1415,46 @@ export default function Home() {
             <div className="p-8 max-w-[960px] w-full mx-auto flex-1 animate-fadeIn">
               
               {!adminSession.loggedIn ? (
-                /* Login screen */
-                <div className="max-w-[380px] w-full mx-auto my-16 bg-bg-surface border border-border-custom rounded-lg p-8 shadow-lg">
-                  <div className="text-center font-serif font-bold text-xl mb-6 text-primary">Moderator Session Login</div>
-                  <form onSubmit={handleLoginSubmit} className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[0.7rem] font-bold text-text-secondary uppercase tracking-wider">Username</label>
-                      <input type="text" name="username" required className="p-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none focus:border-primary focus:bg-bg-surface" />
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[0.7rem] font-bold text-text-secondary uppercase tracking-wider">Password</label>
-                      <input type="password" name="password" required className="p-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none focus:border-primary focus:bg-bg-surface" />
-                    </div>
-                    <button type="submit" className="bg-primary hover:bg-primary-hover text-white text-xs font-semibold p-2.5 rounded-md mt-2 cursor-pointer shadow-xs transition-colors text-center">
-                      Authenticate Session
-                    </button>
-                  </form>
-                  <p className="text-[0.7rem] text-text-muted leading-relaxed text-center mt-6">
-                    Seeded developer admin access:<br /><strong>admin</strong> / <strong>AdminPassword123!</strong>
-                  </p>
-                </div>
+                isDatabaseEmpty === true ? (
+                  /* Setup screen */
+                  <div className="max-w-[380px] w-full mx-auto my-16 bg-bg-surface border border-border-custom rounded-lg p-8 shadow-lg animate-fadeIn">
+                    <div className="text-center font-serif font-bold text-xl mb-3 text-primary">Initial Admin Setup</div>
+                    <p className="text-center text-[0.72rem] text-text-secondary mb-4 leading-relaxed">
+                      No administrator accounts exist in the database. Create the master admin account below.
+                    </p>
+                    <form onSubmit={handleSetupSubmit} className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[0.7rem] font-bold text-text-secondary uppercase tracking-wider">Username</label>
+                        <input type="text" name="username" required className="p-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none focus:border-primary focus:bg-bg-surface" />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[0.7rem] font-bold text-text-secondary uppercase tracking-wider">Password</label>
+                        <input type="password" name="password" required className="p-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none focus:border-primary focus:bg-bg-surface" />
+                      </div>
+                      <button type="submit" className="bg-green-val hover:bg-[#0a4d33] text-white text-xs font-semibold p-2.5 rounded-md mt-2 cursor-pointer shadow-xs transition-colors text-center">
+                        Register Master Admin
+                      </button>
+                    </form>
+                  </div>
+                ) : (
+                  /* Login screen */
+                  <div className="max-w-[380px] w-full mx-auto my-16 bg-bg-surface border border-border-custom rounded-lg p-8 shadow-lg animate-fadeIn">
+                    <div className="text-center font-serif font-bold text-xl mb-6 text-primary">Moderator Session Login</div>
+                    <form onSubmit={handleLoginSubmit} className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[0.7rem] font-bold text-text-secondary uppercase tracking-wider">Username</label>
+                        <input type="text" name="username" required className="p-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none focus:border-primary focus:bg-bg-surface" />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[0.7rem] font-bold text-text-secondary uppercase tracking-wider">Password</label>
+                        <input type="password" name="password" required className="p-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none focus:border-primary focus:bg-bg-surface" />
+                      </div>
+                      <button type="submit" className="bg-primary hover:bg-primary-hover text-white text-xs font-semibold p-2.5 rounded-md mt-2 cursor-pointer shadow-xs transition-colors text-center">
+                        Authenticate Session
+                      </button>
+                    </form>
+                  </div>
+                )
               ) : (
                 /* Admin Console */
                 <div className="bg-bg-surface border border-border-custom rounded-lg p-6 shadow-md">

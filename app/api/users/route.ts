@@ -5,12 +5,14 @@ import { checkAdminSession } from '../../../lib/authHelper';
 
 export async function GET() {
   try {
-    const admin = await checkAdminSession();
-    if (!admin) {
-      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    const users = getUsers();
+    if (users.length > 0) {
+      const admin = await checkAdminSession();
+      if (!admin) {
+        return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+      }
     }
 
-    const users = getUsers();
     const sanitized = users.map(({ username, role }) => ({ username, role }));
     return NextResponse.json(sanitized);
   } catch (err) {
@@ -21,8 +23,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const users = getUsers();
     const admin = await checkAdminSession();
-    if (!admin) {
+    if (!admin && users.length > 0) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     }
 
@@ -31,7 +34,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Username, password, and role are required.' }, { status: 400 });
     }
 
-    const users = getUsers();
     if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
       return NextResponse.json({ error: 'User already exists.' }, { status: 400 });
     }

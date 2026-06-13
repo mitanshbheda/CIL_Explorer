@@ -1,7 +1,17 @@
 [
   {
     "username": "admin",
-    "passwordHash": "$2a$10$erifZH2yQoPMY02wbfu35OO0JytJzyryc0Gsp.o1v03WLLIyKF8zO",
+    "passwordHash": "$2b$10$Y7ZSJcVwUtqkW5B8SfbGfuaHIT8JvqRS3uycu4dQoXgk25Su.tz.K",
+    "role": "admin"
+  },
+  {
+    "username": "ananyaa",
+    "passwordHash": "$2b$10$2.SxflbtZahc005cvRbnru4xnRTR2fMzPi8bX/cJiq/dddf1TAq1K",
+    "role": "admin"
+  },
+  {
+    "username": "mitansh",
+    "passwordHash": "$2b$10$iRdlSyasQwGImdoZ/wp7DOYcMe87MzpNEOx1tMAal0HedAFgr9QFW",
     "role": "admin"
   }
 ]

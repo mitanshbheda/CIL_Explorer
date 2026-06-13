@@ -10,6 +10,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Username and password required.' }, { status: 400 });
     }
 
+    // Check environment variables first
+    const envAdminUser = process.env.ADMIN_USERNAME;
+    const envAdminPass = process.env.ADMIN_PASSWORD;
+    if (
+      envAdminUser &&
+      envAdminPass &&
+      username.toLowerCase() === envAdminUser.toLowerCase() &&
+      password === envAdminPass
+    ) {
+      const sessionUser = { username: envAdminUser, role: 'admin' as const };
+      const cookieStore = await cookies();
+      
+      cookieStore.set('session', JSON.stringify(sessionUser), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24, // 1 day
+        path: '/'
+      });
+
+      return NextResponse.json({ success: true, user: sessionUser });
+    }
+
     const users = getUsers();
     const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
 
