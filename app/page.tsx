@@ -151,6 +151,7 @@ export default function Home() {
   
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
+  const [countrySearchQuery, setCountrySearchQuery] = useState('');
   const [filterDomain, setFilterDomain] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterRegion, setFilterRegion] = useState('');
@@ -266,6 +267,7 @@ export default function Home() {
     setSelectedNormId(null);
     setSelectedCountryName(null);
     setSearchQuery('');
+    setCountrySearchQuery('');
     setFilterDomain('');
     setFilterStatus('');
     setFilterRegion('');
@@ -759,7 +761,7 @@ export default function Home() {
           <i className="fa-solid fa-scale-balanced"></i> Law Explorer
         </button>
         <button 
-          onClick={() => { setActiveView('country-profiles'); setSelectedCountryName(null); }}
+          onClick={() => { setActiveView('country-profiles'); setSelectedCountryName(null); setCountrySearchQuery(''); }}
           className={`text-xs font-medium px-3 h-full border-b-3 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
             activeView === 'country-profiles' 
               ? 'text-primary border-primary font-semibold' 
@@ -1157,30 +1159,69 @@ export default function Home() {
                   <p className="text-xs text-text-secondary mb-6 leading-relaxed">
                     Select a nation to audit active customs authorities, trade agreement alignments, and contributions to international customary laws.
                   </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {countries.map(c => (
-                      <div 
-                        key={c.name} 
-                        onClick={() => setSelectedCountryName(c.name)}
-                        className="bg-bg-surface border border-border-custom rounded-md p-4 shadow-xs hover:shadow-md hover:border-primary hover:-translate-y-0.5 cursor-pointer transition-all duration-150"
-                      >
-                        <div className="font-serif font-bold text-lg text-text-primary mb-2.5">{c.name}</div>
-                        <div className="text-[0.75rem] text-text-secondary flex justify-between py-1 border-b border-bg-app">
-                          <span className="text-text-muted">Region</span> <span>{c.region}</span>
+                  {(() => {
+                    const filteredCountries = countries.filter(c => 
+                      c.name.toLowerCase().includes(countrySearchQuery.toLowerCase().trim()) ||
+                      c.region.toLowerCase().includes(countrySearchQuery.toLowerCase().trim()) ||
+                      c.trade_bloc.toLowerCase().includes(countrySearchQuery.toLowerCase().trim()) ||
+                      c.authority.toLowerCase().includes(countrySearchQuery.toLowerCase().trim())
+                    );
+                    return (
+                      <>
+                        {/* Country Search Bar */}
+                        <div className="mb-6 relative max-w-[400px]">
+                          <input 
+                            type="text" 
+                            placeholder="Search countries, regions, authorities..."
+                            value={countrySearchQuery}
+                            onChange={(e) => setCountrySearchQuery(e.target.value)}
+                            className="w-full pl-3 pr-8 py-2 text-xs border border-border-custom rounded-md bg-bg-input text-text-primary focus:border-primary focus:bg-bg-surface outline-none transition-all duration-200"
+                          />
+                          {countrySearchQuery ? (
+                            <button 
+                              onClick={() => setCountrySearchQuery('')}
+                              className="absolute right-8 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary cursor-pointer text-xs"
+                            >
+                              &times;
+                            </button>
+                          ) : null}
+                          <i className="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"></i>
                         </div>
-                        <div className="text-[0.75rem] text-text-secondary flex justify-between py-1 border-b border-bg-app">
-                          <span className="text-text-muted">Trade Bloc</span> <span>{c.trade_bloc}</span>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {filteredCountries.length === 0 ? (
+                            <div className="p-8 text-center text-text-muted text-xs bg-bg-surface border border-border-custom rounded-md col-span-full">
+                              <i className="fa-regular fa-folder-open text-2xl mb-2 block"></i>
+                              No countries match search query.
+                            </div>
+                          ) : (
+                            filteredCountries.map(c => (
+                              <div 
+                                key={c.name} 
+                                onClick={() => setSelectedCountryName(c.name)}
+                                className="bg-bg-surface border border-border-custom rounded-md p-4 shadow-xs hover:shadow-md hover:border-primary hover:-translate-y-0.5 cursor-pointer transition-all duration-150"
+                              >
+                                <div className="font-serif font-bold text-lg text-text-primary mb-2.5">{c.name}</div>
+                                <div className="text-[0.75rem] text-text-secondary flex justify-between py-1 border-b border-bg-app">
+                                  <span className="text-text-muted">Region</span> <span>{c.region}</span>
+                                </div>
+                                <div className="text-[0.75rem] text-text-secondary flex justify-between py-1 border-b border-bg-app">
+                                  <span className="text-text-muted">Trade Bloc</span> <span>{c.trade_bloc}</span>
+                                </div>
+                                <div className="text-[0.75rem] text-text-secondary flex justify-between py-1 border-b border-bg-app">
+                                  <span className="text-text-muted">Customs Authority</span> <span className="max-w-[140px] truncate">{c.authority}</span>
+                                </div>
+                                <div className="mt-4 flex gap-1.5">
+                                  <span className="text-[0.68rem] font-semibold bg-primary-light text-primary px-2.5 py-0.5 rounded-full">{c.practice_count} Practices</span>
+                                  <span className="text-[0.68rem] font-semibold bg-green-light text-green-val px-2.5 py-0.5 rounded-full">{c.domain_count} Domains</span>
+                                </div>
+                              </div>
+                            ))
+                          )}
                         </div>
-                        <div className="text-[0.75rem] text-text-secondary flex justify-between py-1 border-b border-bg-app">
-                          <span className="text-text-muted">Customs Authority</span> <span className="max-w-[140px] truncate">{c.authority}</span>
-                        </div>
-                        <div className="mt-4 flex gap-1.5">
-                          <span className="text-[0.68rem] font-semibold bg-primary-light text-primary px-2.5 py-0.5 rounded-full">{c.practice_count} Practices</span>
-                          <span className="text-[0.68rem] font-semibold bg-green-light text-green-val px-2.5 py-0.5 rounded-full">{c.domain_count} Domains</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      </>
+                    );
+                  })()}
                 </div>
               ) : (
                 <div className="bg-bg-surface border border-border-custom rounded-lg p-4 md:p-6 shadow-md">
