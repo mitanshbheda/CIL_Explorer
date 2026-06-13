@@ -800,28 +800,28 @@ export default function Home() {
           <aside className={`${selectedNormId ? 'hidden md:flex' : 'flex w-full md:w-[320px]'} bg-bg-sidebar border-r border-border-custom flex-col shrink-0 overflow-hidden transition-all duration-200 z-40`}>
             
             {/* Search Box */}
-            <div className="p-4 border-b border-border-custom">
+            <div className="px-4 py-2.5 border-b border-border-custom">
               <div className="relative">
                 <input 
                   type="text" 
                   placeholder="Search regulations, keys..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-3 pr-8 py-2 text-xs border border-border-custom rounded-md bg-bg-input text-text-primary focus:border-primary focus:bg-bg-surface outline-none transition-all duration-200"
+                  className="w-full pl-3 pr-8 py-1.5 text-xs border border-border-custom rounded-md bg-bg-input text-text-primary focus:border-primary focus:bg-bg-surface outline-none transition-all duration-200"
                 />
                 <i className="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"></i>
               </div>
             </div>
 
             {/* Filter: Domain */}
-            <div className="px-4 py-3 border-b border-border-custom">
-              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-text-muted mb-2 flex justify-between">
+            <div className="px-4 py-2 border-b border-border-custom">
+              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-text-muted mb-1 flex justify-between">
                 Domain <i className="fa-solid fa-filter"></i>
               </div>
               <select 
                 value={filterDomain}
                 onChange={(e) => setFilterDomain(e.target.value)}
-                className="w-full p-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none cursor-pointer"
+                className="w-full py-1.5 px-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none cursor-pointer"
               >
                 <option value="">All Domains</option>
                 {DOMAIN_ORDER.map(d => (
@@ -831,14 +831,14 @@ export default function Home() {
             </div>
 
             {/* Filter: Status */}
-            <div className="px-4 py-3 border-b border-border-custom">
-              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-text-muted mb-2">Legal Status</div>
+            <div className="px-4 py-2 border-b border-border-custom">
+              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-text-muted mb-1">Legal Status</div>
               <div className="flex flex-wrap gap-1">
                 {['', 'established', 'emerging', 'contested'].map(s => (
                   <span 
                     key={s}
                     onClick={() => setFilterStatus(s)}
-                    className={`text-[0.72rem] px-2.5 py-0.5 rounded-full border cursor-pointer select-none transition-all ${
+                    className={`text-[0.7rem] px-2 py-0.5 rounded-full border cursor-pointer select-none transition-all ${
                       filterStatus === s 
                         ? 'bg-primary text-white border-primary' 
                         : 'border-border-custom bg-bg-input text-text-secondary hover:border-primary'
@@ -850,34 +850,34 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Filter: Region */}
-            <div className="px-4 py-3 border-b border-border-custom">
-              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-text-muted mb-2">Geographic Region</div>
-              <select 
-                value={filterRegion} 
-                onChange={(e) => setFilterRegion(e.target.value)}
-                className="w-full p-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none"
-              >
-                <option value="">All Regions</option>
-                {["North America", "Europe", "Asia-Pacific", "Latin America", "Middle East", "Africa", "Global"].map(r => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Filter: Trade Bloc */}
-            <div className="px-4 py-3 border-b border-border-custom">
-              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-text-muted mb-2">Trade Bloc</div>
-              <select 
-                value={filterTradeBloc}
-                onChange={(e) => setFilterTradeBloc(e.target.value)}
-                className="w-full p-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none"
-              >
-                <option value="">All Trade Blocs</option>
-                {["USMCA", "European Union", "CPTPP", "RCEP", "Mercosur", "EFTA", "ECOWAS", "SACU", "GCC", "None"].map(b => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
+            {/* Filter: Region & Trade Bloc side-by-side */}
+            <div className="px-4 py-2 border-b border-border-custom grid grid-cols-2 gap-2">
+              <div>
+                <div className="text-[0.68rem] font-bold uppercase tracking-wider text-text-muted mb-1">Region</div>
+                <select 
+                  value={filterRegion} 
+                  onChange={(e) => setFilterRegion(e.target.value)}
+                  className="w-full py-1.5 px-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none cursor-pointer"
+                >
+                  <option value="">All Regions</option>
+                  {["North America", "Europe", "Asia-Pacific", "Latin America", "Middle East", "Africa", "Global"].map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <div className="text-[0.68rem] font-bold uppercase tracking-wider text-text-muted mb-1">Trade Bloc</div>
+                <select 
+                  value={filterTradeBloc}
+                  onChange={(e) => setFilterTradeBloc(e.target.value)}
+                  className="w-full py-1.5 px-2 border border-border-custom rounded-md bg-bg-input text-text-primary text-xs outline-none cursor-pointer"
+                >
+                  <option value="">All Trade Blocs</option>
+                  {["USMCA", "European Union", "CPTPP", "RCEP", "Mercosur", "EFTA", "ECOWAS", "SACU", "GCC", "None"].map(b => (
+                    <option key={b} value={b}>{b}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Scroll List Header */}
