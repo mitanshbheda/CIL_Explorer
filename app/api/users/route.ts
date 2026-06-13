@@ -5,7 +5,7 @@ import { checkAdminSession } from '../../../lib/authHelper';
 
 export async function GET() {
   try {
-    const users = getUsers();
+    const users = await getUsers();
     if (users.length > 0) {
       const admin = await checkAdminSession();
       if (!admin) {
@@ -23,7 +23,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const users = getUsers();
+    const users = await getUsers();
     const admin = await checkAdminSession();
     if (!admin && users.length > 0) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     };
 
     users.push(newUser);
-    saveUsers(users);
+    await saveUsers(users);
 
     return NextResponse.json({ success: true, user: { username, role } });
   } catch (err) {

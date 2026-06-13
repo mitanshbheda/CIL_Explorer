@@ -3,8 +3,8 @@ import { getNorms, getAnalytics } from '../../../lib/db';
 
 export async function GET() {
   try {
-    const norms = getNorms();
-    const analytics = getAnalytics();
+    const norms = await getNorms();
+    const analytics = await getAnalytics();
 
     const totalNorms = norms.length;
     const establishedCount = norms.filter(n => n.status === 'established').length;

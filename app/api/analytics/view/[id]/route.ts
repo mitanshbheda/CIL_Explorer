@@ -9,12 +9,12 @@ export async function POST(
     const { id } = await context.params;
     const normId = id.toUpperCase();
 
-    const analytics = getAnalytics();
+    const analytics = await getAnalytics();
     analytics.search_logs = analytics.search_logs || [];
     analytics.view_logs = analytics.view_logs || {};
 
     analytics.view_logs[normId] = (analytics.view_logs[normId] || 0) + 1;
-    saveAnalytics(analytics);
+    await saveAnalytics(analytics);
 
     return new Response(null, { status: 204 });
   } catch (err) {

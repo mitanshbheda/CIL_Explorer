@@ -4,7 +4,7 @@ import { checkAdminSession } from '../../../lib/authHelper';
 
 export async function GET() {
   try {
-    const norms = getNorms();
+    const norms = await getNorms();
     return NextResponse.json(norms);
   } catch (err) {
     console.error('GET /api/norms error:', err);
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Norm ID, Title, and Domain are required.' }, { status: 400 });
     }
 
-    const norms = getNorms();
+    const norms = await getNorms();
     if (norms.find(n => n.norm_id.toUpperCase() === newNorm.norm_id.toUpperCase())) {
       return NextResponse.json({ error: `Norm with ID ${newNorm.norm_id} already exists.` }, { status: 400 });
     }
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     newNorm.contested = !!newNorm.contested;
 
     norms.push(newNorm);
-    saveNorms(norms);
+    await saveNorms(norms);
 
     return NextResponse.json(newNorm, { status: 201 });
   } catch (err) {

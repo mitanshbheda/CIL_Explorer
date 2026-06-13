@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, user: sessionUser });
     }
 
-    const users = getUsers();
+    const users = await getUsers();
     const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
 
     if (user && bcrypt.compareSync(password, user.passwordHash)) {

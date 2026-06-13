@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       }
     }
 
-    saveNorms(importedData as Norm[]);
+    await saveNorms(importedData as Norm[]);
     return NextResponse.json({ success: true, count: importedData.length });
   } catch (err) {
     console.error('POST /api/data/import error:', err);

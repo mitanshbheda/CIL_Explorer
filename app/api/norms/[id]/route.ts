@@ -16,7 +16,7 @@ export async function PUT(
     const normId = id.toUpperCase();
     const updatedNorm: Norm = await request.json();
 
-    const norms = getNorms();
+    const norms = await getNorms();
     const idx = norms.findIndex(n => n.norm_id.toUpperCase() === normId);
     if (idx === -1) {
       return NextResponse.json({ error: `Norm with ID ${normId} not found.` }, { status: 404 });
@@ -31,7 +31,7 @@ export async function PUT(
     updatedNorm.contested = !!updatedNorm.contested;
 
     norms[idx] = updatedNorm;
-    saveNorms(norms);
+    await saveNorms(norms);
 
     return NextResponse.json(updatedNorm);
   } catch (err) {
@@ -53,7 +53,7 @@ export async function DELETE(
     const { id } = await context.params;
     const normId = id.toUpperCase();
 
-    let norms = getNorms();
+    let norms = await getNorms();
     const initialLen = norms.length;
     norms = norms.filter(n => n.norm_id.toUpperCase() !== normId);
     
@@ -61,7 +61,7 @@ export async function DELETE(
       return NextResponse.json({ error: `Norm with ID ${normId} not found.` }, { status: 404 });
     }
 
-    saveNorms(norms);
+    await saveNorms(norms);
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error('DELETE /api/norms/[id] error:', err);

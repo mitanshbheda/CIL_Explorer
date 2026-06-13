@@ -4,7 +4,7 @@ import { COUNTRY_METADATA } from '../../../lib/countryMetadata';
 
 export async function GET() {
   try {
-    const norms = getNorms();
+    const norms = await getNorms();
     const countriesMap: Record<string, any> = {};
 
     norms.forEach(norm => {

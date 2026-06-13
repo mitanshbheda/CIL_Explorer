@@ -13,7 +13,7 @@ export async function DELETE(
     }
 
     const { username } = await context.params;
-    let users = getUsers();
+    let users = await getUsers();
     const userToDelete = users.find(u => u.username.toLowerCase() === username.toLowerCase());
     
     if (!userToDelete) {
@@ -34,7 +34,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'User not found.' }, { status: 404 });
     }
 
-    saveUsers(users);
+    await saveUsers(users);
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error('DELETE /api/users/[username] error:', err);

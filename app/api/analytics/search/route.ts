@@ -8,7 +8,7 @@ export async function POST(request: Request) {
       return new Response(null, { status: 400 });
     }
 
-    const analytics = getAnalytics();
+    const analytics = await getAnalytics();
     analytics.search_logs = analytics.search_logs || [];
     analytics.view_logs = analytics.view_logs || {};
 
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       analytics.search_logs.shift();
     }
 
-    saveAnalytics(analytics);
+    await saveAnalytics(analytics);
     return new Response(null, { status: 204 });
   } catch (err) {
     console.error('POST /api/analytics/search error:', err);

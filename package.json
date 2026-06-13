@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed-admin": "node scripts/seed-admin.js"
+    "seed-admin": "node scripts/seed-admin.js",
+    "supabase-seed": "node scripts/supabase-seed.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.108.1",
     "bcryptjs": "^3.0.3",
     "next": "16.2.9",
     "react": "19.2.4",
