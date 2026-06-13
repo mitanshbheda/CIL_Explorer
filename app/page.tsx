@@ -708,7 +708,7 @@ export default function Home() {
     <div className="h-full flex flex-col bg-bg-app text-text-primary transition-colors duration-200">
       
       {/* ── TOP HEADER BAR ── */}
-      <header className="h-[64px] bg-bg-sidebar border-b border-border-custom px-6 flex items-center justify-between shrink-0 z-50 shadow-xs">
+      <header className="h-[64px] bg-bg-sidebar border-b border-border-custom px-4 md:px-6 flex items-center justify-between shrink-0 z-50 shadow-xs">
         <div 
           onClick={handleResetToLanding}
           className="flex items-center gap-3 cursor-pointer select-none active:scale-[0.98] transition-transform duration-100 hover:opacity-90"
@@ -746,12 +746,56 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Navigation View switcher */}
+      <div className="relative bg-bg-sidebar border-b border-border-custom flex gap-2 px-4 md:px-6 h-[48px] items-stretch shrink-0 overflow-x-auto scrollbar-none whitespace-nowrap z-50">
+        <button 
+          onClick={() => setActiveView('explorer')}
+          className={`text-xs font-medium px-3 h-full border-b-3 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            activeView === 'explorer' 
+              ? 'text-primary border-primary font-semibold' 
+              : 'text-text-secondary hover:text-primary border-transparent'
+          }`}
+        >
+          <i className="fa-solid fa-scale-balanced"></i> Law Explorer
+        </button>
+        <button 
+          onClick={() => { setActiveView('country-profiles'); setSelectedCountryName(null); }}
+          className={`text-xs font-medium px-3 h-full border-b-3 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            activeView === 'country-profiles' 
+              ? 'text-primary border-primary font-semibold' 
+              : 'text-text-secondary hover:text-primary border-transparent'
+          }`}
+        >
+          <i className="fa-solid fa-globe"></i> Country Profiles
+        </button>
+        <button 
+          onClick={() => { setActiveView('analytics'); loadAnalyticsDashboard(); }}
+          className={`text-xs font-medium px-3 h-full border-b-3 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            activeView === 'analytics' 
+              ? 'text-primary border-primary font-semibold' 
+              : 'text-text-secondary hover:text-primary border-transparent'
+          }`}
+        >
+          <i className="fa-solid fa-chart-line"></i> Analytics Hub
+        </button>
+        <button 
+          onClick={() => { setActiveView('admin'); loadUsersListStatus(); }}
+          className={`text-xs font-medium px-3 h-full border-b-3 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            activeView === 'admin' 
+              ? 'text-primary border-primary font-semibold' 
+              : 'text-text-secondary hover:text-primary border-transparent'
+          }`}
+        >
+          <i className="fa-solid fa-user-lock"></i> Admin Portal
+        </button>
+      </div>
+
       {/* ── MAIN WORKSPACE ── */}
       <div className="flex flex-1 overflow-hidden relative">
         
         {/* Left Sidebar (Only visible in Explorer view) */}
         {activeView === 'explorer' && (
-          <aside className="w-[320px] bg-bg-sidebar border-r border-border-custom flex flex-col shrink-0 overflow-hidden transition-all duration-200 z-40">
+          <aside className={`${selectedNormId ? 'hidden md:flex' : 'flex w-full md:w-[320px]'} bg-bg-sidebar border-r border-border-custom flex-col shrink-0 overflow-hidden transition-all duration-200 z-40`}>
             
             {/* Search Box */}
             <div className="p-4 border-b border-border-custom">
@@ -872,61 +916,17 @@ export default function Home() {
         )}
 
         {/* ── CENTRAL VIEWPORT ── */}
-        <main className="flex-1 overflow-y-auto flex flex-col">
-          
-          {/* Navigation View switcher */}
-          <div className="bg-bg-sidebar border-b border-border-custom flex gap-4 px-6 h-[48px] items-end shrink-0">
-            <button 
-              onClick={() => setActiveView('explorer')}
-              className={`text-xs font-medium pb-2 border-b-3 px-1 transition-all cursor-pointer ${
-                activeView === 'explorer' 
-                  ? 'text-primary border-primary font-semibold' 
-                  : 'text-text-secondary hover:text-primary border-transparent'
-              }`}
-            >
-              <i className="fa-solid fa-scale-balanced mr-1"></i> Law Explorer
-            </button>
-            <button 
-              onClick={() => { setActiveView('country-profiles'); setSelectedCountryName(null); }}
-              className={`text-xs font-medium pb-2 border-b-3 px-1 transition-all cursor-pointer ${
-                activeView === 'country-profiles' 
-                  ? 'text-primary border-primary font-semibold' 
-                  : 'text-text-secondary hover:text-primary border-transparent'
-              }`}
-            >
-              <i className="fa-solid fa-globe mr-1"></i> Country Profiles
-            </button>
-            <button 
-              onClick={() => { setActiveView('analytics'); loadAnalyticsDashboard(); }}
-              className={`text-xs font-medium pb-2 border-b-3 px-1 transition-all cursor-pointer ${
-                activeView === 'analytics' 
-                  ? 'text-primary border-primary font-semibold' 
-                  : 'text-text-secondary hover:text-primary border-transparent'
-              }`}
-            >
-              <i className="fa-solid fa-chart-line mr-1"></i> Analytics Hub
-            </button>
-            <button 
-              onClick={() => { setActiveView('admin'); loadUsersListStatus(); }}
-              className={`text-xs font-medium pb-2 border-b-3 px-1 transition-all cursor-pointer ${
-                activeView === 'admin' 
-                  ? 'text-primary border-primary font-semibold' 
-                  : 'text-text-secondary hover:text-primary border-transparent'
-              }`}
-            >
-              <i className="fa-solid fa-user-lock mr-1"></i> Admin Portal
-            </button>
-          </div>
+        <main className={`${activeView === 'explorer' && !selectedNormId ? 'hidden md:flex' : 'flex'} flex-1 overflow-y-auto flex-col`}>
 
           {/* ── PANEL 1: EXPLORER VIEW ── */}
           {activeView === 'explorer' && (
-            <div className="p-8 max-w-[960px] w-full mx-auto flex-1 animate-fadeIn">
+            <div className="p-4 md:p-8 max-w-[960px] w-full mx-auto flex-1 animate-fadeIn">
               
               {!activeNorm ? (
                 <div className="max-w-[600px] mx-auto my-16 text-center flex flex-col items-center gap-5">
                   <div className="text-3xl bg-primary-light text-primary w-[80px] h-[80px] rounded-full flex items-center justify-center">⚖</div>
-                  <h1 className="font-serif font-bold text-2xl">Customary International Law & Customs Reference</h1>
-                  <p className="text-xs text-text-secondary leading-relaxed">
+                  <h1 className="font-serif font-bold text-2xl px-4">Customary International Law & Customs Reference</h1>
+                  <p className="text-xs text-text-secondary leading-relaxed px-6">
                     Select a regulation or customary law from the left panel to display comprehensive summaries, associated state practices, declarations of opinio juris, and primary document citations.
                   </p>
                 </div>
@@ -934,12 +934,19 @@ export default function Home() {
                 <div className="bg-bg-surface border border-border-custom rounded-lg shadow-md overflow-hidden">
                   
                   {/* Detailed Doc Header */}
-                  <div className="p-6 border-b-2 border-bg-app bg-bg-surface">
+                  <div className="p-4 md:p-6 border-b-2 border-bg-app bg-bg-surface">
+                    {/* Mobile Back Button */}
+                    <button 
+                      onClick={() => setSelectedNormId(null)}
+                      className="md:hidden mb-4 bg-bg-input hover:bg-border-custom border border-border-custom px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 cursor-pointer text-text-secondary w-fit"
+                    >
+                      <i className="fa-solid fa-arrow-left"></i> Back to Regulations List
+                    </button>
                     <div className="flex justify-between items-center text-[0.68rem] font-bold text-text-muted tracking-wider mb-2.5">
                       <span>REFERENCE CODE</span>
                       <span className="font-mono">{activeNorm.norm_id}</span>
                     </div>
-                    <h2 className="font-serif font-bold text-2xl leading-snug mb-3">{activeNorm.title}</h2>
+                    <h2 className="font-serif font-bold text-xl md:text-2xl leading-snug mb-3">{activeNorm.title}</h2>
                     <div className="flex flex-wrap gap-1.5 items-center">
                       <span className={`text-[0.68rem] font-semibold px-2.5 py-0.5 rounded-full uppercase ${
                         activeNorm.status === 'established' 
@@ -960,7 +967,7 @@ export default function Home() {
                   </div>
 
                   {/* Document Section Tabs */}
-                  <div className="px-6 border-b border-border-custom flex gap-2 overflow-x-auto">
+                  <div className="px-4 md:px-6 border-b border-border-custom flex gap-2 overflow-x-auto scrollbar-none whitespace-nowrap">
                     {[
                       { id: 'summary', label: 'Summary & Rule' },
                       { id: 'practice', label: `State Practice (${activeNorm.state_practice.length})` },
@@ -972,7 +979,7 @@ export default function Home() {
                       <button 
                         key={tab.id}
                         onClick={() => setActiveDocTab(tab.id as any)}
-                        className={`text-xs font-semibold py-3 px-2 border-b-2 cursor-pointer transition-colors ${
+                        className={`text-xs font-semibold py-3 px-2 border-b-2 cursor-pointer transition-colors whitespace-nowrap ${
                           activeDocTab === tab.id 
                             ? 'text-primary border-primary' 
                             : 'text-text-secondary hover:text-primary border-transparent'
@@ -984,7 +991,7 @@ export default function Home() {
                   </div>
 
                   {/* Document Tab Panels */}
-                  <div className="p-6">
+                  <div className="p-4 md:p-6">
                     
                     {/* Panel 1: Summary */}
                     {activeDocTab === 'summary' && (
@@ -1129,7 +1136,7 @@ export default function Home() {
                     {/* Panel 6: Map */}
                     {activeDocTab === 'map' && (
                       <div className="animate-fadeIn">
-                        <div className="h-[380px] w-full rounded-md border border-border-custom overflow-hidden" ref={mapContainerRef}></div>
+                        <div className="h-[250px] md:h-[380px] w-full rounded-md border border-border-custom overflow-hidden" ref={mapContainerRef}></div>
                         <div className="text-[0.72rem] text-text-muted mt-2.5 italic">Interactive Leaflet mapping of states providing evidence of practice for this custom.</div>
                       </div>
                     )}
@@ -1142,7 +1149,7 @@ export default function Home() {
 
           {/* ── PANEL 2: COUNTRY PROFILES VIEW ── */}
           {activeView === 'country-profiles' && (
-            <div className="p-8 max-w-[960px] w-full mx-auto flex-1 animate-fadeIn">
+            <div className="p-4 md:p-8 max-w-[960px] w-full mx-auto flex-1 animate-fadeIn">
               
               {!selectedCountryName ? (
                 <div>
@@ -1176,10 +1183,10 @@ export default function Home() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-bg-surface border border-border-custom rounded-lg p-6 shadow-md">
+                <div className="bg-bg-surface border border-border-custom rounded-lg p-4 md:p-6 shadow-md">
                   <div className="flex justify-between items-start border-b-2 border-bg-app pb-4 mb-5">
                     <div>
-                      <h3 className="font-serif font-bold text-3xl">{selectedCountryName}</h3>
+                      <h3 className="font-serif font-bold text-2xl md:text-3xl">{selectedCountryName}</h3>
                       <p className="text-text-muted text-xs mt-1">LexCustoms regulatory status report</p>
                     </div>
                     <button 
@@ -1193,7 +1200,7 @@ export default function Home() {
                   {activeCountry && (
                     <>
                       {/* Specs */}
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-bg-surface-alt p-4 rounded-md border border-border-custom mb-6">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-bg-surface-alt p-4 rounded-md border border-border-custom mb-6">
                         <div className="flex flex-col">
                           <span className="text-[0.65rem] font-bold text-text-muted uppercase tracking-wider">Region</span>
                           <span className="text-xs font-medium mt-0.5">{activeCountry.region}</span>
@@ -1216,38 +1223,40 @@ export default function Home() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
                         {/* Country Map container */}
-                        <div className="bg-bg-surface border border-border-custom p-4 rounded shadow-sm h-[380px]">
+                        <div className="bg-bg-surface border border-border-custom p-4 rounded shadow-sm h-[300px] md:h-[380px]">
                           <div className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3 pb-2 border-b border-border-custom">Country focus map</div>
-                          <div className="h-[280px] w-full rounded border border-border-custom" ref={countryMapContainerRef}></div>
+                          <div className="h-[200px] md:h-[280px] w-full rounded border border-border-custom" ref={countryMapContainerRef}></div>
                         </div>
 
                         {/* Norms list */}
-                        <div className="bg-bg-surface border border-border-custom p-4 rounded shadow-sm h-[380px] overflow-y-auto">
+                        <div className="bg-bg-surface border border-border-custom p-4 rounded shadow-sm h-[300px] md:h-[380px] overflow-y-auto">
                           <div className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3 pb-2 border-b border-border-custom">Associated Regulations ({activeCountry.norms.length})</div>
-                          <table className="w-full border-collapse text-xs text-left">
-                            <thead>
-                              <tr className="bg-bg-surface-alt text-text-secondary border-b-2 border-border-custom">
-                                <th className="p-2">Code</th>
-                                <th className="p-2">Title</th>
-                                <th className="p-2 text-right">Status</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {activeCountry.norms.map(n => (
-                                <tr 
-                                  key={n.norm_id} 
-                                  onClick={() => { setActiveView('explorer'); handleSelectNorm(n.norm_id); }}
-                                  className="border-b border-bg-app hover:bg-bg-input cursor-pointer"
-                                >
-                                  <td className="p-2"><span className="font-mono text-[0.65rem] bg-bg-input px-1 py-0.5 rounded">{n.norm_id}</span></td>
-                                  <td className="p-2 text-text-primary">{n.title}</td>
-                                  <td className="p-2 text-right"><span className={`inline-block w-2 h-2 rounded-full ${
-                                    n.status === 'established' ? 'bg-green-val' : (n.status === 'emerging' ? 'bg-amber-val' : 'bg-red-val')
-                                  }`}></span></td>
+                          <div className="overflow-x-auto">
+                            <table className="w-full border-collapse text-xs text-left">
+                              <thead>
+                                <tr className="bg-bg-surface-alt text-text-secondary border-b-2 border-border-custom">
+                                  <th className="p-2">Code</th>
+                                  <th className="p-2">Title</th>
+                                  <th className="p-2 text-right">Status</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody>
+                                {activeCountry.norms.map(n => (
+                                  <tr 
+                                    key={n.norm_id} 
+                                    onClick={() => { setActiveView('explorer'); handleSelectNorm(n.norm_id); }}
+                                    className="border-b border-bg-app hover:bg-bg-input cursor-pointer"
+                                  >
+                                    <td className="p-2"><span className="font-mono text-[0.65rem] bg-bg-input px-1 py-0.5 rounded">{n.norm_id}</span></td>
+                                    <td className="p-2 text-text-primary">{n.title}</td>
+                                    <td className="p-2 text-right"><span className={`inline-block w-2 h-2 rounded-full ${
+                                      n.status === 'established' ? 'bg-green-val' : (n.status === 'emerging' ? 'bg-amber-val' : 'bg-red-val')
+                                    }`}></span></td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
 
                       </div>
@@ -1262,8 +1271,8 @@ export default function Home() {
 
           {/* ── PANEL 3: ANALYTICS DASHBOARD ── */}
           {activeView === 'analytics' && (
-            <div className="p-8 max-w-[960px] w-full mx-auto flex-1 animate-fadeIn">
-              <h2 className="font-serif font-bold text-2xl mb-1.5">Database growth & usage metrics</h2>
+            <div className="p-4 md:p-8 max-w-[960px] w-full mx-auto flex-1 animate-fadeIn">
+              <h2 className="font-serif font-bold text-xl md:text-2xl mb-1.5">Database growth & usage metrics</h2>
               <p className="text-xs text-text-secondary mb-6 leading-relaxed">
                 Real-time dashboard reporting custom data points, access views, and search keywords.
               </p>
@@ -1295,7 +1304,7 @@ export default function Home() {
                   {/* Charts */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     
-                    <div className="bg-bg-surface border border-border-custom rounded p-5 shadow-sm">
+                    <div className="bg-bg-surface border border-border-custom rounded p-4 md:p-5 shadow-sm">
                       <div className="text-xs font-bold uppercase tracking-wider text-text-secondary pb-2 border-b border-border-custom mb-4">Regulations by Domain</div>
                       <div className="flex flex-col gap-2.5">
                         {(() => {
@@ -1316,7 +1325,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="bg-bg-surface border border-border-custom rounded p-5 shadow-sm">
+                    <div className="bg-bg-surface border border-border-custom rounded p-4 md:p-5 shadow-sm">
                       <div className="text-xs font-bold uppercase tracking-wider text-text-secondary pb-2 border-b border-border-custom mb-4">Status Distribution</div>
                       <div className="flex flex-col gap-2.5">
                         {[
@@ -1346,61 +1355,65 @@ export default function Home() {
                   </div>
 
                   {/* Viewed regulations */}
-                  <div className="bg-bg-surface border border-border-custom rounded p-5 shadow-sm mb-6">
+                  <div className="bg-bg-surface border border-border-custom rounded p-4 md:p-5 shadow-sm mb-6">
                     <div className="text-xs font-bold uppercase tracking-wider text-text-secondary pb-2 border-b border-border-custom mb-4">Most Consulted Regulations</div>
-                    <table className="w-full border-collapse text-xs text-left">
-                      <thead>
-                        <tr className="bg-bg-surface-alt border-b-2 border-border-custom text-text-secondary">
-                          <th className="p-2">ID</th>
-                          <th className="p-2">Title</th>
-                          <th className="p-2">Domain</th>
-                          <th className="p-2 text-right">Views</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {analyticsData.mostViewed.length === 0 ? (
-                          <tr><td colSpan={4} className="p-4 text-center text-text-muted">No consultation views logged.</td></tr>
-                        ) : (
-                          analyticsData.mostViewed.map((item: any) => (
-                            <tr 
-                              key={item.norm_id} 
-                              onClick={() => { setActiveView('explorer'); handleSelectNorm(item.norm_id); }}
-                              className="border-b border-bg-app hover:bg-bg-input cursor-pointer"
-                            >
-                              <td className="p-2"><span className="font-mono text-[0.65rem] bg-bg-input px-1.5 py-0.5 rounded">{item.norm_id}</span></td>
-                              <td className="p-2 text-text-primary font-medium">{item.title}</td>
-                              <td className="p-2 text-text-secondary">{DOMAIN_LABELS[item.domain] || item.domain}</td>
-                              <td className="p-2 text-right font-bold text-primary">{item.views} views</td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse text-xs text-left min-w-[500px]">
+                        <thead>
+                          <tr className="bg-bg-surface-alt border-b-2 border-border-custom text-text-secondary">
+                            <th className="p-2">ID</th>
+                            <th className="p-2">Title</th>
+                            <th className="p-2">Domain</th>
+                            <th className="p-2 text-right">Views</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {analyticsData.mostViewed.length === 0 ? (
+                            <tr><td colSpan={4} className="p-4 text-center text-text-muted">No consultation views logged.</td></tr>
+                          ) : (
+                            analyticsData.mostViewed.map((item: any) => (
+                              <tr 
+                                key={item.norm_id} 
+                                onClick={() => { setActiveView('explorer'); handleSelectNorm(item.norm_id); }}
+                                className="border-b border-bg-app hover:bg-bg-input cursor-pointer"
+                              >
+                                <td className="p-2"><span className="font-mono text-[0.65rem] bg-bg-input px-1.5 py-0.5 rounded">{item.norm_id}</span></td>
+                                <td className="p-2 text-text-primary font-medium">{item.title}</td>
+                                <td className="p-2 text-text-secondary">{DOMAIN_LABELS[item.domain] || item.domain}</td>
+                                <td className="p-2 text-right font-bold text-primary">{item.views} views</td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
                   {/* Top Searches */}
-                  <div className="bg-bg-surface border border-border-custom rounded p-5 shadow-sm">
+                  <div className="bg-bg-surface border border-border-custom rounded p-4 md:p-5 shadow-sm">
                     <div className="text-xs font-bold uppercase tracking-wider text-text-secondary pb-2 border-b border-border-custom mb-4">Recent Search Keyword Logs</div>
-                    <table className="w-full border-collapse text-xs text-left">
-                      <thead>
-                        <tr className="bg-bg-surface-alt border-b-2 border-border-custom text-text-secondary">
-                          <th className="p-2">Keyword Query</th>
-                          <th className="p-2 text-right">Frequency</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {analyticsData.topSearches.length === 0 ? (
-                          <tr><td colSpan={2} className="p-4 text-center text-text-muted">No keywords searched yet.</td></tr>
-                        ) : (
-                          analyticsData.topSearches.map((item: any) => (
-                            <tr key={item.keyword} className="border-b border-bg-app">
-                              <td className="p-2 text-text-primary"><i className="fa-solid fa-clock-rotate-left mr-2 text-text-muted"></i> "{item.keyword}"</td>
-                              <td className="p-2 text-right font-bold">{item.count} searches</td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse text-xs text-left min-w-[300px]">
+                        <thead>
+                          <tr className="bg-bg-surface-alt border-b-2 border-border-custom text-text-secondary">
+                            <th className="p-2">Keyword Query</th>
+                            <th className="p-2 text-right">Frequency</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {analyticsData.topSearches.length === 0 ? (
+                            <tr><td colSpan={2} className="p-4 text-center text-text-muted">No keywords searched yet.</td></tr>
+                          ) : (
+                            analyticsData.topSearches.map((item: any) => (
+                              <tr key={item.keyword} className="border-b border-bg-app">
+                                <td className="p-2 text-text-primary"><i className="fa-solid fa-clock-rotate-left mr-2 text-text-muted"></i> "{item.keyword}"</td>
+                                <td className="p-2 text-right font-bold">{item.count} searches</td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </>
               ) : (
@@ -1412,7 +1425,7 @@ export default function Home() {
 
           {/* ── PANEL 4: ADMIN PORTAL ── */}
           {activeView === 'admin' && (
-            <div className="p-8 max-w-[960px] w-full mx-auto flex-1 animate-fadeIn">
+            <div className="p-4 md:p-8 max-w-[960px] w-full mx-auto flex-1 animate-fadeIn">
               
               {!adminSession.loggedIn ? (
                 isDatabaseEmpty === true ? (
@@ -1457,8 +1470,8 @@ export default function Home() {
                 )
               ) : (
                 /* Admin Console */
-                <div className="bg-bg-surface border border-border-custom rounded-lg p-6 shadow-md">
-                  <div className="flex border-b border-border-custom mb-6 gap-2">
+                <div className="bg-bg-surface border border-border-custom rounded-lg p-4 md:p-6 shadow-md">
+                  <div className="flex border-b border-border-custom mb-6 gap-2 overflow-x-auto scrollbar-none whitespace-nowrap">
                     {[
                       { id: 'editor', label: 'Norms Editor' },
                       { id: 'users', label: 'User Management' },
@@ -1467,7 +1480,7 @@ export default function Home() {
                       <button 
                         key={sub.id}
                         onClick={() => setAdminTab(sub.id as any)}
-                        className={`text-xs font-bold py-2.5 px-4 rounded-t-md border-b-2 cursor-pointer transition-colors ${
+                        className={`text-xs font-bold py-2.5 px-4 rounded-t-md border-b-2 cursor-pointer transition-colors whitespace-nowrap ${
                           adminTab === sub.id 
                             ? 'bg-bg-surface-alt border-primary text-primary border-t border-x border-border-custom' 
                             : 'text-text-secondary hover:text-primary border-transparent'
@@ -1483,14 +1496,14 @@ export default function Home() {
                     <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
                       
                       {/* Sidebar Selection */}
-                      <div>
+                      <div className={`${editingNorm ? 'hidden lg:block' : 'block'}`}>
                         <button 
                           onClick={createNewNormForm}
                           className="w-full bg-green-val hover:bg-[#0a4d33] text-white text-xs font-semibold p-2 rounded-md mb-4 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors"
                         >
                           <i className="fa-solid fa-plus"></i> Create New Regulation
                         </button>
-                        <div className="bg-bg-sidebar border border-border-custom rounded h-[580px] overflow-y-auto">
+                        <div className="bg-bg-sidebar border border-border-custom rounded h-[400px] lg:h-[580px] overflow-y-auto">
                           {norms.map(norm => (
                             <div 
                               key={norm.norm_id} 
@@ -1512,7 +1525,7 @@ export default function Home() {
                       </div>
 
                       {/* Editing Panel */}
-                      <div className="bg-bg-surface-alt border border-border-custom rounded-md p-6">
+                      <div className={`${editingNorm ? 'block' : 'hidden lg:block'} bg-bg-surface-alt border border-border-custom rounded-md p-4 md:p-6`}>
                         {!editingNorm ? (
                           <div className="text-center py-20 flex flex-col items-center gap-3">
                             <i className="fa-solid fa-edit text-3xl text-text-muted"></i>
@@ -1521,8 +1534,17 @@ export default function Home() {
                           </div>
                         ) : (
                           <form onSubmit={handleSaveNorm} className="flex flex-col gap-4">
-                            <div className="flex justify-between items-center pb-3 border-b border-border-custom">
-                              <h4 className="font-bold text-sm">{isEditingNew ? 'Create New Regulation' : `Edit Regulation ${editingNorm.norm_id}`}</h4>
+                            <div className="flex justify-between items-center pb-3 border-b border-border-custom gap-2">
+                              <div className="flex items-center gap-2">
+                                <button 
+                                  type="button" 
+                                  onClick={cancelEditor}
+                                  className="lg:hidden bg-bg-input hover:bg-border-custom border border-border-custom px-2.5 py-1.5 rounded text-[0.72rem] font-semibold flex items-center gap-1.5 cursor-pointer text-text-secondary"
+                                >
+                                  <i className="fa-solid fa-arrow-left"></i> List
+                                </button>
+                                <h4 className="font-bold text-xs md:text-sm">{isEditingNew ? 'Create New Regulation' : `Edit Regulation ${editingNorm.norm_id}`}</h4>
+                              </div>
                               {!isEditingNew && (
                                 <button 
                                   type="button" 
