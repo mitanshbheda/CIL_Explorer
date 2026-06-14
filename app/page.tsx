@@ -139,7 +139,7 @@ const COUNTRY_COORDINATES: Record<string, { lat: number; lng: number }> = {
 
 export default function Home() {
   // Navigation & Views
-  const [activeView, setActiveView] = useState<'explorer' | 'country-profiles' | 'analytics' | 'admin'>('explorer');
+  const [activeView, setActiveView] = useState<'explorer' | 'country-profiles' | 'analytics' | 'admin' | 'copyright'>('explorer');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   
   // Data Cache
@@ -790,6 +790,16 @@ export default function Home() {
         >
           <i className="fa-solid fa-user-lock"></i> Admin Portal
         </button>
+        <button 
+          onClick={() => { setActiveView('copyright'); }}
+          className={`text-xs font-medium px-3 h-full border-b-3 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            activeView === 'copyright' 
+              ? 'text-primary border-primary font-semibold' 
+              : 'text-text-secondary hover:text-primary border-transparent'
+          }`}
+        >
+          <i className="fa-solid fa-copyright"></i> Copyright & Terms
+        </button>
       </div>
 
       {/* ── MAIN WORKSPACE ── */}
@@ -913,6 +923,17 @@ export default function Home() {
                   </div>
                 ))
               )}
+            </div>
+
+            {/* Sidebar Footer */}
+            <div className="p-3 border-t border-border-custom bg-bg-surface-alt flex items-center justify-between text-[0.68rem] text-text-muted shrink-0">
+              <span>© 2026 LexCustoms</span>
+              <button 
+                onClick={() => setActiveView('copyright')}
+                className="hover:text-primary hover:underline cursor-pointer font-medium text-text-secondary transition-colors"
+              >
+                Terms & Copyright
+              </button>
             </div>
           </aside>
         )}
@@ -2019,6 +2040,77 @@ export default function Home() {
                 </div>
               )}
 
+            </div>
+          )}
+
+          {/* ── PANEL 5: COPYRIGHT & TERMS OF USE ── */}
+          {activeView === 'copyright' && (
+            <div className="p-4 md:p-8 max-w-[800px] w-full mx-auto flex-1 animate-fadeIn overflow-y-auto">
+              <div className="bg-bg-surface border border-border-custom rounded-lg p-6 md:p-8 shadow-md">
+                <div className="border-b-2 border-bg-app pb-4 mb-6 flex justify-between items-start">
+                  <div>
+                    <h2 className="font-serif font-bold text-2xl md:text-3xl">Copyright Notice & Terms of Use</h2>
+                    <p className="text-text-muted text-xs mt-1">LexCustoms legal information and guidelines</p>
+                  </div>
+                  <button 
+                    onClick={() => setActiveView('explorer')}
+                    className="bg-bg-input hover:bg-border-custom border border-border-custom px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 cursor-pointer text-text-secondary transition-colors"
+                  >
+                    <i className="fa-solid fa-arrow-left"></i> Law Explorer
+                  </button>
+                </div>
+
+                <div className="prose prose-sm dark:prose-invert max-w-none text-xs leading-relaxed text-text-secondary flex flex-col gap-5">
+                  <div>
+                    <h3 className="font-serif font-bold text-lg text-text-primary mb-2">Copyright Notice</h3>
+                    <p className="font-bold text-text-primary mb-2">
+                      © 2026 Customary International Law Explorer (CIL Explorer). All rights reserved.
+                    </p>
+                    <p>
+                      The content of this website, including but not limited to original summaries, classifications, taxonomies, metadata, visualisations, methodology documents, research reports, and other original materials, is protected by copyright.
+                    </p>
+                  </div>
+
+                  <hr className="border-0 border-t border-border-custom" />
+
+                  <div>
+                    <h3 className="font-serif font-bold text-base text-text-primary mb-1.5">Permitted Use</h3>
+                    <p>
+                      Users may access, read, download, and cite materials from the CIL Explorer for personal, educational, academic, and non-commercial research purposes, provided proper attribution is given.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="font-serif font-bold text-base text-text-primary mb-1.5">Restrictions</h3>
+                    <p>
+                      Except as permitted by law, no part of this website may be reproduced, distributed, modified, republished, incorporated into another database, used to train commercial systems, or exploited for commercial purposes without prior written permission from the copyright holder.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="font-serif font-bold text-base text-text-primary mb-1.5">Third-Party Materials</h3>
+                    <p>
+                      Nothing in this notice restricts the use of public-domain materials, treaties, judicial decisions, resolutions, or other third-party source materials referenced by the CIL Explorer.
+                    </p>
+                  </div>
+
+                  <div className="bg-bg-surface-alt border border-border-custom p-4 rounded-md mt-2">
+                    <h3 className="font-serif font-bold text-xs uppercase tracking-wider text-text-muted mb-2">Suggested Citation</h3>
+                    <div className="font-mono text-[0.72rem] text-text-secondary leading-relaxed bg-bg-input p-3 rounded border border-border-custom break-all" id="suggested-citation-box">
+                      Customary International Law Explorer (CIL Explorer), [Title of Entry], accessed {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}, available at https://cil-explorer.vercel.app/
+                    </div>
+                    <button 
+                      onClick={() => {
+                        const text = document.getElementById('suggested-citation-box')?.textContent || '';
+                        navigator.clipboard.writeText(text).then(() => addToast('Citation template copied to clipboard', 'info'));
+                      }}
+                      className="bg-bg-input border border-border-custom hover:bg-border-custom text-text-secondary text-[0.72rem] font-medium px-3 py-1.5 rounded mt-3 inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+                    >
+                      <i className="fa-solid fa-copy"></i> Copy Citation Template
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
